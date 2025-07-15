@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Basic Three.js App</title>
+    <style>
+      html, body { margin: 0; padding: 0; overflow: hidden; }
+    </style>
+  </head>
+  <body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/97/three.js"></script>
+    <script src="js/biblioteca/OrbitControls.js"></script>
+    <script>
+	
+	
+	
+var vectorA=[1,2,4,2];
+var vectorB=[2,3,2,1];
+
+var k=15
+var l=k/2
+var MatrixA= new Array(k);
+var MatrixB= new Array(k);
+var MatrixBT;
+var MatrixC= new Array(k);
+
+
+
+for(var i=0;i<k;i++)
+{
+	MatrixA[i]= new Array(k);	
+	for(var j=0;j<k;j++)
+	{	
+		var r=Math.random();
+		if(j % 2 == 0 && i % 2 == 0 && r<=0.2){
+		MatrixA[i][j]=1	
+		//alert("par")
+		}else{
+		MatrixA[i][j]=0	
+		//alert("inpar")
+		}	
+	}		
+}
+
+for(var i=0;i<k;i++)
+{
+	MatrixB[i]= new Array(k);	
+	for(var j=0;j<k;j++)
+	{	
+		MatrixB[i][j]=0	
+	}		
+}
+
+
+for(var i=0;i<k;i++)
+{
+	MatrixC[i]= new Array(k);	
+	for(var j=0;j<k;j++)
+	{	
+		MatrixC[i][j]=0	
+	}		
+}
+
+
+console.log(MatrixA)
+console.log(MatrixB)
+
+
+for (var i=0; i<k; i++) {
+	for (var j=0; j<k; j++) {
+			if(MatrixA[i][j]==1){
+				var tipo=Math.floor(Math.random()*4)				
+					switch (tipo) {
+					case 0:					
+					for (var i2=i; i2<k ; i2++) {						
+						MatrixB[i2][j]=0
+					}
+					MatrixC[i][j]=tipo
+					break;
+					
+					case 1:
+					for (var j2=j; j2<k ; j2++) {
+						MatrixB[i][j2]=1
+					}
+					for (var i2=0; i2<k ; i2++) {						
+						MatrixB[i2][j]=1 
+					}
+					
+					MatrixC[i][j]=tipo
+					break;
+					
+					case 2:
+					for (var j2=j; j2<k ; j2++) {
+						MatrixB[i][j2]=1
+					}
+					for (var i2=i; i2<k ; i2++) {						
+						MatrixB[i2][j]=1
+					}
+					MatrixC[i][j]=tipo
+					break;
+					
+					case 3:
+					for (var j2=j; j2<k ; j2++) {						
+						MatrixB[i][j2]=0
+					}					
+					MatrixC[i][j]=tipo
+					break;
+					default:
+					}				
+			}
+	}
+}
+
+
+
+
+/*
+MatrixC[0][0]=punto(MatrixA[0],MatrixBT[0]);
+MatrixC[0][1]=punto(MatrixA[0],MatrixBT[1]);
+MatrixC[1][0]=punto(MatrixA[1],MatrixBT[0]);
+MatrixC[1][1]=punto(MatrixA[1],MatrixBT[1]);
+*/
+
+console.log(MatrixC)
+////////////////////////////////////////////////////////////////////////////////
+// Javascript will go here.
+var scene = new THREE.Scene();
+var aspect = window.innerWidth / window.innerHeight;
+var camera = new THREE.PerspectiveCamera( 75, aspect, 0.1, 1000 );
+var renderer = new THREE.WebGLRenderer();
+renderer.setSize( window.innerWidth, window.innerHeight );
+document.body.appendChild( renderer.domElement );
+
+///Skybox
+	scene.background = new THREE.CubeTextureLoader()
+    .setPath( 'js/texturas/skybox/' )
+    .load( [ 'px.png', 'nx.png', 'py.png', 'ny.png', 'pz.png', 'nz.png' ] );
+
+for(var i=0;i<k;i++)
+{
+
+	for(var j=0;j<k;j++)
+	{
+		if(MatrixB[i][j]==0){
+		var Altura=Math.floor(Math.random() * (6 - 2)) + 2;	
+		var geometry = new THREE.BoxGeometry( 1, Altura, 1 );
+		switch (Altura) {
+		case 2:
+			
+			texture1 = new THREE.TextureLoader().load( 'js/texturas/ed1.jpg' );
+			var material = new THREE.MeshBasicMaterial( { map: texture1 } );
+			//var material = new THREE.MeshNormalMaterial();
+			break;
+			
+		case 3:
+			texture1 = new THREE.TextureLoader().load( 'js/texturas/ed2.jpg' );
+			var material = new THREE.MeshBasicMaterial( { map: texture1 } );
+			break;
+			
+		case 4:
+			texture1 = new THREE.TextureLoader().load( 'js/texturas/ed3.jpg' );
+			var material = new THREE.MeshBasicMaterial( { map: texture1 } );
+			break;
+			
+		case 5:
+			texture1 = new THREE.TextureLoader().load( 'js/texturas/ed4.jpg' );
+			var material = new THREE.MeshBasicMaterial( { map: texture1 } );
+			break;
+		default:
+		}		
+		var cube = new THREE.Mesh( geometry, material );
+		cube.position.x=i
+		cube.position.y=Altura/2
+		cube.position.z=j
+		scene.add( cube );
+		}else{
+		
+		if (i>=1 && i<k-1 && j>=1 && j<k-1 ){
+			texture1 = new THREE.TextureLoader().load( 'js/texturas/suelo1.jpg' );
+			var material = new THREE.MeshBasicMaterial( { map: texture1 } );
+			
+			if ((MatrixB[i+1][j]==1)&&(MatrixB[i-1][j]==1)&&(MatrixB[i][j+1]==1)&&(MatrixB[i][j-1]==1)){
+			texture1 = new THREE.TextureLoader().load( 'js/texturas/interseccion.jpg' );
+			var material = new THREE.MeshBasicMaterial( { map: texture1	 } );			
+			}
+
+			if ((MatrixB[i+1][j]==0)&&(MatrixB[i-1][j]==0)&&(MatrixB[i][j+1]==1)&&(MatrixB[i][j-1]==1)){
+			texture1 = new THREE.TextureLoader().load( 'js/texturas/suelo3.jpg' );
+			//material = new THREE.MeshBasicMaterial( { color:0x00ff00 } );
+			var material = new THREE.MeshBasicMaterial( { map: texture1	 } );			
+			}
+			if ((MatrixB[i+1][j]==1)&&(MatrixB[i-1][j]==1)&&(MatrixB[i][j+1]==0)&&(MatrixB[i][j-1]==0)){
+			texture1 = new THREE.TextureLoader().load( 'js/texturas/suelo2.jpg' );
+			//material = new THREE.MeshBasicMaterial( { color:0x00ff00 } );
+			var material = new THREE.MeshBasicMaterial( { map: texture1	 } );
+			
+			var geometryse = new THREE.BoxGeometry( 0.02, 1, 0.02 );
+			materialse = new THREE.MeshBasicMaterial( { color:0x0f0f0f } );
+			var semaforo = new THREE.Mesh( geometryse, materialse );
+			semaforo.position.x = i+0.3;
+			semaforo.position.z = j+0.3;
+			semaforo.position.y = 0.5; 
+			scene.add(semaforo);
+			}
+		
+			if ((MatrixB[i+1][j]==1)&&(MatrixB[i-1][j]==0)&&(MatrixB[i][j+1]==1)&&(MatrixB[i][j-1]==0)){
+			texture1 = new THREE.TextureLoader().load( 'js/texturas/suelo4.jpeg' );
+			//material = new THREE.MeshBasicMaterial( { color:0x00ff00 } );
+			var material = new THREE.MeshBasicMaterial( { map: texture1	 } );
+			}
+		
+		
+			}else{ 
+		
+		material = new THREE.MeshBasicMaterial( { color:0xff0000 } );
+		}
+			
+			
+
+/*for(var i=0;i<10;i++)
+	{
+		for(var j=0;j<10;j++)
+		{
+			if(MatrixA[i][j] == 1)
+			{ 
+			 
+				
+				var piso = new THREE.BoxGeometry( 1, 0.1, 1 );
+				texture1 = new THREE.TextureLoader().load( 'js/texturas/suelo.jpg' );
+				material2 = new THREE.MeshBasicMaterial( { map: texture1 } );
+				var cube2 = new THREE.Mesh( piso, material2 );
+				cube2.position.x = i;
+				cube2.position.z = j;
+				cube2.position.y = 0.05;
+				
+				scene.add( cube2 );
+				
+				}
+
+		}				
+		
+	}*/
+
+		
+		var geometry = new THREE.BoxGeometry( 1, 0.1, 1 );
+		
+		
+		//if ((MatrixB[i+1][j]==0)&&(MatrixB[i-1][j]==0)&&(MatrixB[i][j+1]==0)&&(MatrixB[i][j-1]==0)){
+		//var geometry = new THREE.BoxGeometry( 1, 0.1, 1 );
+		//texture1 = new THREE.TextureLoader().load( 'js/texturas/interseccion.jpg' );
+		//var material = new THREE.MeshBasicMaterial( { map: texture1 } );*
+				
+	
+		var cube = new THREE.Mesh( geometry, material );
+		cube.position.x=i
+		cube.position.z=j
+		scene.add( cube );
+		}
+	}		
+}
+
+camera.position.z = -5;
+
+
+	controls = new THREE.OrbitControls( camera );
+
+var render = function () {
+  requestAnimationFrame( render );
+  //cube.rotation.x += 0.1;
+  //cube.rotation.y += 0.1;
+  renderer.render( scene, camera );
+//Controles
+	controls.update();
+	};
+	render();
+
+
+
+	</script>
+  </body>
+</html>
